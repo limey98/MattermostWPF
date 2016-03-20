@@ -1,0 +1,52 @@
+﻿<metro:MetroWindow x:Class="Mattermost.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:metro="http://metro.mahapps.com/winfx/xaml/controls"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        xmlns:views="clr-namespace:Mattermost.Views"
+        xmlns:vm="clr-namespace:Mattermost.ViewModels.Views"
+        Title="Mattermost" Height="600" Width="1000"
+        TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+        TextElement.FontWeight="Regular"
+        TextElement.FontSize="13"
+        TextOptions.TextFormattingMode="Ideal" 
+        TextOptions.TextRenderingMode="Auto"        
+        Background="{DynamicResource MaterialDesignPaper}"
+        FontFamily="/Mattermost;component/Fonts/Open Sans/#Open Sans"
+        GlowBrush="{DynamicResource AccentColorBrush}"
+        BorderThickness="1">
+    <metro:MetroWindow.DataContext>
+        <vm:MainWindowViewModel/>
+    </metro:MetroWindow.DataContext>
+    <metro:MetroWindow.Resources>
+        <DataTemplate DataType="{x:Type vm:LoginViewModel}">
+            <views:LoginView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:MessageViewModel}">
+            <views:MessageView/>
+        </DataTemplate>
+    </metro:MetroWindow.Resources>
+    <materialDesign:DialogHost Identifier="RootDialog">
+        <ContentControl>
+            <ContentControl.Style>
+                <Style TargetType="ContentControl">
+                    <Setter Property="Content" Value="{Binding CurrentView}"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding RelativeSource={x:Static RelativeSource.Self}, Path=Content}" Value="{x:Null}">
+                            <Setter Property="ContentControl.Template">
+                                <Setter.Value>
+                                    <ControlTemplate>
+                                        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                                            <ProgressBar Style="{DynamicResource MaterialDesignCircularProgressBar}" HorizontalAlignment="Center" Margin="16" IsIndeterminate="True" Value="0"/>
+                                            <TextBlock HorizontalAlignment="Center">Loading</TextBlock>
+                                        </StackPanel>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </ContentControl.Style>
+        </ContentControl>
+    </materialDesign:DialogHost>
+</metro:MetroWindow>

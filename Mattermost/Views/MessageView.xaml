@@ -1,0 +1,95 @@
+﻿<UserControl x:Class="Mattermost.Views.MessageView" 
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Mattermost.Views"
+             xmlns:utils="clr-namespace:Mattermost.Utils"
+             xmlns:material="http://materialdesigninxaml.net/winfx/xaml/themes"
+             mc:Ignorable="d" 
+             d:DesignHeight="200" d:DesignWidth="600">
+    <UserControl.Resources>
+        <utils:DateTimeToTimeStringConverter x:Key="DateTimeToTimeString"/>
+        <utils:DateTimeToDateStringConverter x:Key="DateTimeToDateString"/>
+        <utils:BoolToVisibilityHiddenConverter x:Key="BoolToVisibilityHidden"/>
+        <DataTemplate x:Key="Date">
+            <TextBlock TextAlignment="Center" Text="{Binding Timestamp, Converter={StaticResource DateTimeToDateString}}"/>
+        </DataTemplate>
+        <DataTemplate x:Key="MessageOnly">
+            <DockPanel MaxWidth="1000">
+                <TextBlock Text="{Binding Timestamp, Converter={StaticResource DateTimeToTimeString}}" Foreground="{StaticResource PrimaryHueDarkForegroundBrush}" Visibility="{Binding IsMouseOver, Converter={StaticResource BoolToVisibilityHidden}}" FontSize="7pt" Width="50" Margin="2,6,4,0" TextAlignment="Center"/>
+                <TextBlock Text="{Binding Message}" Margin="0,4" TextWrapping="Wrap"/>
+            </DockPanel>
+        </DataTemplate>
+        <DataTemplate x:Key="MessageAndName">
+            <DockPanel MaxWidth="1000" Margin="0,4,0,0">
+                <StackPanel Margin="56,4,0,4">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="{Binding User.DisplayName}" FontWeight="Bold"/>
+                        <TextBlock Text="{Binding Timestamp, Converter={StaticResource DateTimeToTimeString}}" Foreground="{StaticResource PrimaryHueDarkForegroundBrush}" FontSize="8pt" Margin="10,0" VerticalAlignment="Center"/>
+                    </StackPanel>
+                    <TextBlock Text="{Binding Message}" Margin="0,4" TextWrapping="Wrap"/>
+                </StackPanel>
+            </DockPanel>
+        </DataTemplate>
+        <DataTemplate x:Key="MessageNameAndAvatar">
+            <DockPanel MaxWidth="1000" Margin="0,4,0,0">
+                <Image Source="{Binding Avatar}" Width="36" Height="36" Margin="8,0,12,8" RenderOptions.BitmapScalingMode="HighQuality"/>
+                <StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="{Binding User.DisplayName}" FontWeight="Bold"/>
+                        <TextBlock Text="{Binding Timestamp, Converter={StaticResource DateTimeToTimeString}}" Foreground="{StaticResource PrimaryHueDarkForegroundBrush}" FontSize="8pt" Margin="10,0" VerticalAlignment="Center"/>
+                    </StackPanel>
+                    <TextBlock Text="{Binding Message}" Margin="0,4" TextWrapping="Wrap"/>
+                </StackPanel>
+            </DockPanel>
+        </DataTemplate>
+        <utils:PostTypeSelector x:Key="PostTypeSelector" Date="{StaticResource Date}" MessageOnly="{StaticResource MessageOnly}" MessageAndName="{StaticResource MessageAndName}" MessageNameAndAvatar="{StaticResource MessageNameAndAvatar}"/>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="200"/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <local:SidebarView DataContext="{Binding SidebarVM}" Grid.RowSpan="3"/>
+        <Border Grid.Column="1" BorderBrush="{StaticResource PrimaryHueVeryDarkBrush}" BorderThickness="0,0,0,1">
+            <DockPanel LastChildFill="False">
+                <TextBlock FontWeight="Bold" FontSize="18" Margin="20,10" Text="{Binding ActiveChannel.DisplayName}"/>
+                <TextBlock Margin="10,0" Text="{Binding ActiveChannel.Header}" VerticalAlignment="Center"/>
+            </DockPanel>
+        </Border>
+        <ScrollViewer utils:Attached.ScrollableHeight="{Binding ActiveChannel.ScrollableHeight, Mode=TwoWay}" utils:Attached.VerticalOffset="{Binding ActiveChannel.ScrollPosition, Mode=TwoWay}" Grid.Column="1" Grid.Row="1" VerticalScrollBarVisibility="Auto">
+            <ItemsControl ItemsSource="{Binding ActiveChannel.Posts}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <DockPanel MouseEnter="MessageMouseEnter" MouseLeave="MessageMouseLeave">
+                            <DockPanel.Style>
+                                <Style TargetType="DockPanel">
+                                    <Style.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter Property="Background" Value="{StaticResource PrimaryHueMidBrush}"/>
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </DockPanel.Style>
+                            <ContentControl Content="{Binding}" ContentTemplateSelector="{StaticResource PostTypeSelector}" Margin="10,0"/>
+                        </DockPanel>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+        <Border Grid.Column="1" Grid.Row="2" BorderBrush="{StaticResource PrimaryHueVeryDarkBrush}" BorderThickness="0,1,0,0">
+            <DockPanel MaxWidth="1000" Margin="10">
+                <Button Command="{Binding ActiveChannel.SendMessageCommand}" DockPanel.Dock="Right" Style="{StaticResource MaterialDesignFloatingActionFlatVeryMiniButton}" Margin="10,0,0,0">
+                    <material:PackIcon Kind="Send"/>
+                </Button>
+                <TextBox Text="{Binding ActiveChannel.Message, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" material:TextFieldAssist.Hint="Send Message..."/>
+            </DockPanel>
+        </Border>
+    </Grid>
+</UserControl>
