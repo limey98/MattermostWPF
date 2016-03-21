@@ -246,7 +246,7 @@ namespace Mattermost
             try
             {
                 HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, new Uri(APIBaseURL, "users/login"));
-                Dictionary<string, object> postData = new Dictionary<string, object>() { { "name", "avengers" }, { "password", ConvertToString(password) } };
+                Dictionary<string, object> postData = new Dictionary<string, object>() { { "name", team }, { "password", ConvertToString(password) } };
 
                 if (Regex.IsMatch(username, @"[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?"))
                     postData.Add("email", username);
