@@ -21,7 +21,10 @@ namespace Mattermost.ViewModels.Views
             LocalConfig config = LocalStorage.GetConfig();
 
             if (config == null)
+            {
                 CurrentView = new LoginViewModel(this);
+                return;
+            }
 
             CheckConfig(config);
         }

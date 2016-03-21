@@ -43,7 +43,10 @@ namespace Mattermost.Utils
         {
             PostViewModel post = item as PostViewModel;
 
-            switch (post?.Type)
+            if (post == null)
+                return null;
+
+            switch (post.Type)
             {
                 case PostDisplayType.Date:
                     return Date;

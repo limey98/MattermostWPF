@@ -11,7 +11,12 @@ namespace Mattermost
 
         public static void Initialise()
         {
-            db = new LiteDatabase(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Aeries", "Mattermost", "Database.db"));
+            string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Aeries", "Mattermost");
+
+            if (!Directory.Exists(path))
+                Directory.CreateDirectory(path);
+
+            db = new LiteDatabase(Path.Combine(path, "Database.db"));
         }
 
         public static void Close()
