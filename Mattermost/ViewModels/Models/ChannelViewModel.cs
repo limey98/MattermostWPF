@@ -158,12 +158,12 @@ namespace Mattermost.ViewModels.Models
         {
             APIResponse response = await MattermostAPI.PostMessage(channel, Message);
 
-            SimpleMessageDialog view = new SimpleMessageDialog()
+            /*SimpleMessageDialog view = new SimpleMessageDialog()
             {
                 DataContext = "Testing"
             };
 
-            await DialogHost.Show(view, "RootDialog", (object sender, DialogClosingEventArgs args) => { });
+            await DialogHost.Show(view, "RootDialog", (object sender, DialogClosingEventArgs args) => { });*/
         }
     }
 }
