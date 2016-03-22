@@ -115,7 +115,6 @@
     <Compile Include="ViewModels\Views\MainWindowViewModel.cs" />
     <Compile Include="ViewModels\Views\MessageViewModel.cs" />
     <Compile Include="ViewModels\Models\ChannelViewModel.cs" />
-    <Compile Include="ViewModels\Views\SidebarViewModel.cs" />
     <Compile Include="Views\LoginView.xaml.cs">
       <DependentUpon>LoginView.xaml</DependentUpon>
     </Compile>

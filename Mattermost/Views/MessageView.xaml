@@ -56,7 +56,7 @@
             <ColumnDefinition Width="200"/>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
-        <local:SidebarView DataContext="{Binding SidebarVM}" Grid.RowSpan="3"/>
+        <local:SidebarView Grid.RowSpan="3"/>
         <Border Grid.Column="1" BorderBrush="{StaticResource PrimaryHueVeryDarkBrush}" BorderThickness="0,0,0,1">
             <DockPanel LastChildFill="False">
                 <TextBlock FontWeight="Bold" FontSize="18" Margin="20,10" Text="{Binding ActiveChannel.DisplayName}"/>
