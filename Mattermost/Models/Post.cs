@@ -58,6 +58,8 @@ namespace Mattermost.Models
         Generic,
         [EnumMember(Value = "system_join_leave")]
         JoinLeave,
+        [EnumMember(Value = "join_leave")]
+        OldJoinLeave,
         [EnumMember(Value = "system_header_change")]
         HeaderChange,
         [EnumMember(Value = "system_ephemeral")]

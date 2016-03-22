@@ -230,6 +230,7 @@ namespace Mattermost
 
                 APIBaseURL = new Uri(config.Server + "/api/v1/");
                 Token = config.Token;
+                MyID = config.UserID;
 
                 return new APIResponse() { Success = true };
             }
@@ -265,6 +266,9 @@ namespace Mattermost
                     return new APIResponse() { Success = false, Error = error.Message };
                 }
 
+                JObject array = JsonConvert.DeserializeObject<JObject>(responseContent);
+
+                MyID = array["id"].ToString();
                 Token = response.Headers.GetValues("Token").First();
 
                 return new APIResponse() { Success = true };

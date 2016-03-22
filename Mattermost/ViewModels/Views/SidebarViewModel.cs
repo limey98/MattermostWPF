@@ -71,7 +71,12 @@ namespace Mattermost.ViewModels.Views
 
             foreach (Channel channel in channels.Where(c => c.Type == ChannelType.Direct))
             {
-                User user = users.FirstOrDefault(u => channel.Name.StartsWith(u.ID));
+                string otherID = channel.Name.Substring(0, 26);
+
+                if (otherID == MattermostAPI.MyID)
+                    otherID = channel.Name.Substring(channel.Name.Length - 26);
+
+                User user = users.FirstOrDefault(u => otherID == u.ID);
 
                 if (user != null)
                     channel.DisplayName = user.DisplayName;
