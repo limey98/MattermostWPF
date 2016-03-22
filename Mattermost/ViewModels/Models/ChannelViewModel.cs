@@ -105,12 +105,12 @@ namespace Mattermost.ViewModels.Models
                 case MessageAction.Posted:
                     Post post = JsonConvert.DeserializeObject<Post>(message.Properties.post.ToString());
                     PostViewModel lastPost = Posts.Last();
-                    bool datesMatch = lastPost.Timestamp.Date == post.Timestamp.Date;
+                    bool datesMatch = lastPost.Timestamp.Date == post.Created.Date;
 
                     Application.Current.Dispatcher.Invoke(() =>
                     {
                         if (!datesMatch)
-                            Posts.Add(new PostViewModel(post.Timestamp));
+                            Posts.Add(new PostViewModel(post.Created));
 
                         Posts.Add(new PostViewModel(post, lastPost, !datesMatch, this));
                     });
@@ -133,10 +133,10 @@ namespace Mattermost.ViewModels.Models
                 {
                     newDay = false;
 
-                    if (post.Timestamp.Date != lastDate)
+                    if (post.Created.Date != lastDate)
                     {
-                        posts.Add(new PostViewModel(post.Timestamp));
-                        lastDate = post.Timestamp.Date;
+                        posts.Add(new PostViewModel(post.Created));
+                        lastDate = post.Created.Date;
                         newDay = true;
                     }
 

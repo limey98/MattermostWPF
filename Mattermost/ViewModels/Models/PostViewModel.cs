@@ -25,7 +25,7 @@ namespace Mattermost.ViewModels.Models
                 if (Type == PostDisplayType.Date)
                     return date;
                 else
-                    return post.Timestamp;
+                    return post.Created;
             }
         }
         public string Message
@@ -63,7 +63,7 @@ namespace Mattermost.ViewModels.Models
             if (lastPost == null)
                 Type = PostDisplayType.MessageNameAndAvatar;
             else
-                DetermineType(lastPost.User, lastPost.Timestamp, newDay, channel);
+                DetermineType(lastPost.User, lastPost.Created, newDay, channel);
         }
 
         public PostViewModel(Post thisPost, PostViewModel lastPost, bool newDay, ChannelViewModel channel)

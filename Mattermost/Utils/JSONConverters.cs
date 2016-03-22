@@ -23,8 +23,7 @@ namespace Mattermost.Utils
             writer.WriteValue(val);
         }
 
-        public override object ReadJson(JsonReader reader, Type objectType, object existingValue,
-                                        JsonSerializer serializer)
+        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
             if (reader.TokenType != JsonToken.Integer)
                 throw new Exception("Wrong Token Type");
@@ -80,6 +79,37 @@ namespace Mattermost.Utils
                 writer.WriteValue(((Channel)value).ID);
             else
                 throw new Exception("Expected User object");
+        }
+    }
+
+    public class PostReferenceConverter : JsonConverter
+    {
+        public override bool CanConvert(Type objectType)
+        {
+            return objectType == typeof(PostReference);
+        }
+
+        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        {
+            if (reader.TokenType != JsonToken.String)
+                throw new Exception("Wrong token type");
+
+            string postReference = (string)reader.Value;
+
+            if (!string.IsNullOrWhiteSpace(postReference))
+                return new PostReference() { ID = postReference };
+            else
+                return null;
+        }
+
+        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+        {
+            if (value == null)
+                writer.WriteValue("");
+            else if (value is PostReference)
+                writer.WriteValue(((PostReference)value).ID);
+            else
+                throw new Exception("Expected PostReference object or null.");
         }
     }
 }

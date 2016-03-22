@@ -1,11 +1,12 @@
 ﻿using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Mattermost.Models
 {
     class User
     {
-        static Dictionary<string, User> userList = new Dictionary<string, User>();
+        static List<User> userList = new List<User>();
         static User system;
         
         public static User System
@@ -21,31 +22,10 @@ namespace Mattermost.Models
 
         public static User GetUserByID(string id)
         {
-            if (!userList.ContainsKey(id))
-                return null;
-
-            return userList[id];
+            return userList.FirstOrDefault(u => u.ID == id);
         }
 
-        string id;
-
-        public string ID
-        {
-            get { return id; }
-            set
-            {
-                if (id == value)
-                    return;
-
-                if (id != null && userList.ContainsKey(id))
-                    userList.Remove(id);
-
-                id = value;
-
-                if (id != null)
-                    userList.Add(id, this);
-            }
-        }
+        public string ID { get; set; }
         public string Username { get; set; }
         public string Nickname { get; set; }
         [JsonProperty("first_name")]
@@ -81,6 +61,11 @@ namespace Mattermost.Models
                 else
                     return displayName;
             }
+        }
+
+        public User()
+        {
+            userList.Add(this);
         }
     }
 }
