@@ -91,39 +91,40 @@ namespace Mattermost.ViewModels.Views
                     channel.DisplayName = "Unknown User";
             }
 
-            PublicChannels = new ObservableCollection<ChannelViewModel>(channels.Where(c => c.Type == ChannelType.Public).Select(c => new ChannelViewModel(c)));
-            PrivateGroups = new ObservableCollection<ChannelViewModel>(channels.Where(c => c.Type == ChannelType.Private).Select(c => new ChannelViewModel(c)));
-            DirectMessages = new ObservableCollection<ChannelViewModel>(channels.Where(c => c.Type == ChannelType.Direct).Select(c => new ChannelViewModel(c)));
+            PublicChannels = new ObservableCollection<ChannelViewModel>();
+            PrivateGroups = new ObservableCollection<ChannelViewModel>();
+            DirectMessages = new ObservableCollection<ChannelViewModel>();
 
             string activeChannel = Preferences.Instance.GetPreference("last", "channel");
 
-            if (activeChannel != "")
+            foreach (Channel channel in channels)
             {
-                ChannelViewModel active = PublicChannels.FirstOrDefault(c => c.ID == activeChannel);
+                ChannelViewModel vm = new ChannelViewModel(channel);
 
-                if (active != null)
+                switch (channel.Type)
                 {
-                    SelectedPublicChannel = active;
-                    return;
-                }
+                    case ChannelType.Public:
+                        PublicChannels.Add(vm);
 
-                active = PrivateGroups.FirstOrDefault(c => c.ID == activeChannel);
+                        if (channel.ID == activeChannel)
+                            SelectedPublicChannel = vm;
+                        break;
+                    case ChannelType.Private:
+                        PrivateGroups.Add(vm);
 
-                if (active != null)
-                {
-                    SelectedPrivateGroup = active;
-                    return;
-                }
+                        if (channel.ID == activeChannel)
+                            SelectedPrivateGroup = vm;
+                        break;
+                    case ChannelType.Direct:
+                        DirectMessages.Add(vm);
 
-                active = DirectMessages.FirstOrDefault(c => c.ID == activeChannel);
-
-                if (active != null)
-                {
-                    SelectedDirectMessage = active;
-                    return;
+                        if (channel.ID == activeChannel)
+                            SelectedDirectMessage = vm;
+                        break;
                 }
             }
-            else
+
+            if (activeChannel == "")
                 SelectedPublicChannel = PublicChannels.First(c => c.Name == "town-square");
 
             websocket = new WebSocket(MattermostAPI.APIBaseURL.ToString().Replace("http", "ws") + "websocket", customHeaderItems: new List<KeyValuePair<string, string>>() { new KeyValuePair<string, string>("Authorization", "Bearer " + MattermostAPI.Token) });
@@ -136,6 +137,21 @@ namespace Mattermost.ViewModels.Views
             websocket.Open();
         }
 
+        ChannelViewModel GetChannelByID(string id)
+        {
+            ChannelViewModel channel = PublicChannels.FirstOrDefault(c => c.ID == id);
+
+            if (channel != null)
+                return channel;
+
+            channel = PrivateGroups.FirstOrDefault(c => c.ID == id);
+
+            if (channel != null)
+                return channel;
+
+            return DirectMessages.FirstOrDefault(c => c.ID == id);
+        }
+
         #region WebSocket stuff
         void WebSocketMessage(object sender, MessageReceivedEventArgs e)
         {
@@ -146,7 +162,10 @@ namespace Mattermost.ViewModels.Views
                 case MessageAction.PreferenceChanged:
                     break;
                 default:
-                    ActiveChannel.WebSocketMessage(message);
+                    ChannelViewModel channel = GetChannelByID(message.ChannelID);
+
+                    if (channel != null)
+                        channel.WebSocketMessage(message);
                     break;
             }
         }
