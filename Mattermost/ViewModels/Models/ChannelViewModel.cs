@@ -65,13 +65,7 @@ namespace Mattermost.ViewModels.Models
         public double ScrollPosition
         {
             get { return GetValue<double>(); }
-            set
-            {
-                if (SetValue(value) && value < 50 && !loadingMore)
-                {
-                    loadingMore = true;
-                }
-            }
+            set {  SetValue(value); }
         }
 
         public string Message
@@ -87,7 +81,7 @@ namespace Mattermost.ViewModels.Models
 
         Channel channel;
         RelayCommand sendMessage;
-        bool loadingMore;
+        List<Post> postCache;
 
         public ChannelViewModel(Channel channel)
         {
@@ -112,7 +106,7 @@ namespace Mattermost.ViewModels.Models
                         if (!datesMatch)
                             Posts.Add(new PostViewModel(post.Created));
 
-                        Posts.Add(new PostViewModel(post, lastPost, !datesMatch, this));
+                        Posts.Add(new PostViewModel(post, lastPost.User, lastPost.Timestamp, !datesMatch));
                     });
                     break;
             }
@@ -120,7 +114,7 @@ namespace Mattermost.ViewModels.Models
 
         async void GetPosts()
         {
-            APIResponse<List<Post>> response = await MattermostAPI.GetPosts(ID, 0, 30);
+            APIResponse<ChannelPosts> response = await MattermostAPI.GetPosts(ID, 0, 30);
 
             if (response.Success)
             {
@@ -129,8 +123,12 @@ namespace Mattermost.ViewModels.Models
                 DateTime lastDate = DateTime.MinValue;
                 bool newDay = false;
 
-                foreach (Post post in response.Value)
+                postCache = response.Value.Posts;
+
+                foreach (string postID in response.Value.Order)
                 {
+                    Post post = postCache.First(p => p.ID == postID);
+
                     newDay = false;
 
                     if (post.Created.Date != lastDate)
@@ -140,18 +138,32 @@ namespace Mattermost.ViewModels.Models
                         newDay = true;
                     }
 
-                    posts.Add(new PostViewModel(post, lastPost, newDay, this));
+                    PostViewModel newPost = null;
+
+                    if (lastPost == null)
+                        newPost = new PostViewModel(post);
+                    else
+                        newPost = new PostViewModel(post, lastPost.User, lastPost.Created, newDay);
+
+                    posts.Add(newPost);
+
+                    string rootID;
+
+                    if (post.RootPost == null)
+                        rootID = post.ID;
+                    else
+                        rootID = post.RootPost.ID;
+
+                    int count = postCache.Count(p => p.RootPost != null && p.RootPost.ID == rootID);
+
+                    if (count > 0)
+                        newPost.ReplyCount = count;
 
                     lastPost = post;
                 }
 
                 Posts = new ObservableCollection<PostViewModel>(posts);
             }
-        }
-
-        async void GetEarlierPosts()
-        {
-
         }
 
         async void SendMessage()

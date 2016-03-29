@@ -3,21 +3,45 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
              xmlns:local="clr-namespace:Mattermost.Views"
              xmlns:utils="clr-namespace:Mattermost.Utils"
              xmlns:material="http://materialdesigninxaml.net/winfx/xaml/themes"
              mc:Ignorable="d" 
              d:DesignHeight="200" d:DesignWidth="600">
     <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVisibility"/>
         <utils:DateTimeToTimeStringConverter x:Key="DateTimeToTimeString"/>
         <utils:DateTimeToDateStringConverter x:Key="DateTimeToDateString"/>
         <utils:BoolToVisibilityHiddenConverter x:Key="BoolToVisibilityHidden"/>
+        <utils:GreaterThanConverter x:Key="GreaterThan"/>
+        <sys:Int32 x:Key="Zero">0</sys:Int32>
+        <Style TargetType="{x:Type Hyperlink}" x:Key="RightColumnLinks">
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="False">
+                    <Setter Property="TextBlock.TextDecorations" Value="{x:Null}"/>
+                </Trigger>
+            </Style.Triggers>
+            <Setter Property="Foreground" Value="{DynamicResource SecondaryAccentBrush}"/>
+            <Setter Property="BaselineAlignment" Value="Center"/>
+        </Style>
         <DataTemplate x:Key="Date">
             <TextBlock TextAlignment="Center" Text="{Binding Timestamp, Converter={StaticResource DateTimeToDateString}}"/>
         </DataTemplate>
         <DataTemplate x:Key="MessageOnly">
             <DockPanel MaxWidth="1000">
                 <TextBlock Text="{Binding Timestamp, Converter={StaticResource DateTimeToTimeString}}" Foreground="{StaticResource PrimaryHueDarkForegroundBrush}" Visibility="{Binding IsMouseOver, Converter={StaticResource BoolToVisibilityHidden}}" FontSize="7pt" Width="50" Margin="2,6,4,0" TextAlignment="Center"/>
+                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" Margin="16,3,0,0" VerticalAlignment="Top">
+                    <TextBlock Visibility="{Binding IsMouseOver, Converter={StaticResource BoolToVisibility}}" VerticalAlignment="Center" Margin="4,0">
+                        <Hyperlink Style="{StaticResource RightColumnLinks}">[...]</Hyperlink>
+                    </TextBlock>
+                    <TextBlock VerticalAlignment="Center" Width="32" Visibility="{Binding ShowReply, Converter={StaticResource BoolToVisibility}}">
+                        <Hyperlink Style="{StaticResource RightColumnLinks}">
+                            <material:PackIcon Kind="Reply" VerticalAlignment="Center" Width="20" Height="20"/>
+                            <TextBlock Visibility="{Binding ReplyCount, Converter={StaticResource GreaterThan}, ConverterParameter={StaticResource Zero}}" VerticalAlignment="Center" Text="{Binding ReplyCount}"/>
+                        </Hyperlink>
+                    </TextBlock>
+                </StackPanel>
                 <TextBlock Text="{Binding Message}" Margin="0,4" TextWrapping="Wrap"/>
             </DockPanel>
         </DataTemplate>
@@ -28,7 +52,20 @@
                         <TextBlock Text="{Binding User.DisplayName}" FontWeight="Bold"/>
                         <TextBlock Text="{Binding Timestamp, Converter={StaticResource DateTimeToTimeString}}" Foreground="{StaticResource PrimaryHueDarkForegroundBrush}" FontSize="8pt" Margin="10,0" VerticalAlignment="Center"/>
                     </StackPanel>
-                    <TextBlock Text="{Binding Message}" Margin="0,4" TextWrapping="Wrap"/>
+                    <DockPanel>
+                        <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" Margin="16,3,0,0" VerticalAlignment="Top">
+                            <TextBlock Visibility="{Binding IsMouseOver, Converter={StaticResource BoolToVisibility}}" VerticalAlignment="Center" Margin="4,0">
+                                <Hyperlink Style="{StaticResource RightColumnLinks}">[...]</Hyperlink>
+                                    </TextBlock>
+                                    <TextBlock VerticalAlignment="Center" Width="32" Visibility="{Binding ShowReply, Converter={StaticResource BoolToVisibility}}">
+                                <Hyperlink Style="{StaticResource RightColumnLinks}">
+                                    <material:PackIcon Kind="Reply" VerticalAlignment="Center" Width="20" Height="20"/>
+                                    <TextBlock Visibility="{Binding ReplyCount, Converter={StaticResource GreaterThan}, ConverterParameter={StaticResource Zero}}" VerticalAlignment="Center" Text="{Binding ReplyCount}"/>
+                                </Hyperlink>
+                            </TextBlock>
+                        </StackPanel>
+                        <TextBlock Text="{Binding Message}" Margin="0,4" TextWrapping="Wrap"/>
+                    </DockPanel>
                 </StackPanel>
             </DockPanel>
         </DataTemplate>
@@ -40,7 +77,20 @@
                         <TextBlock Text="{Binding User.DisplayName}" FontWeight="Bold"/>
                         <TextBlock Text="{Binding Timestamp, Converter={StaticResource DateTimeToTimeString}}" Foreground="{StaticResource PrimaryHueDarkForegroundBrush}" FontSize="8pt" Margin="10,0" VerticalAlignment="Center"/>
                     </StackPanel>
-                    <TextBlock Text="{Binding Message}" Margin="0,4" TextWrapping="Wrap"/>
+                    <DockPanel>
+                        <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" Margin="16,3,0,0" VerticalAlignment="Top">
+                            <TextBlock Visibility="{Binding IsMouseOver, Converter={StaticResource BoolToVisibility}}" VerticalAlignment="Center" Margin="4,0">
+                                <Hyperlink Style="{StaticResource RightColumnLinks}">[...]</Hyperlink>
+                            </TextBlock>
+                            <TextBlock VerticalAlignment="Center" Width="32" Visibility="{Binding ShowReply, Converter={StaticResource BoolToVisibility}}">
+                                <Hyperlink Style="{StaticResource RightColumnLinks}">
+                                    <material:PackIcon Kind="Reply" VerticalAlignment="Center" Width="20" Height="20"/>
+                                    <TextBlock Visibility="{Binding ReplyCount, Converter={StaticResource GreaterThan}, ConverterParameter={StaticResource Zero}}" VerticalAlignment="Center" Text="{Binding ReplyCount}"/>
+                                </Hyperlink>
+                            </TextBlock>
+                        </StackPanel>
+                        <TextBlock Text="{Binding Message}" Margin="0,4" TextWrapping="Wrap"/>
+                    </DockPanel>
                 </StackPanel>
             </DockPanel>
         </DataTemplate>
@@ -72,7 +122,7 @@
                                 <Style TargetType="DockPanel">
                                     <Style.Triggers>
                                         <Trigger Property="IsMouseOver" Value="True">
-                                            <Setter Property="Background" Value="{StaticResource PrimaryHueMidBrush}"/>
+                                            <Setter Property="Background" Value="{StaticResource PrimaryHueDarkBrush}"/>
                                         </Trigger>
                                     </Style.Triggers>
                                 </Style>

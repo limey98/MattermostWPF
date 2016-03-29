@@ -28,6 +28,12 @@ namespace Mattermost.Models
         }
     }
 
+    class ChannelPosts
+    {
+        public List<string> Order { get; set; }
+        public List<Post> Posts { get; set; }
+    }
+
     [JsonConverter(typeof(StringEnumConverter))]
     enum ChannelType
     {

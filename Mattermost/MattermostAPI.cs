@@ -332,32 +332,31 @@ namespace Mattermost
             return new APIResponse<Preferences>() { Success = true, Value = Preferences.Instance };
         }
 
-        public static async Task<APIResponse<List<Post>>> GetPosts(string channel, int offset, int limit)
+        public static async Task<APIResponse<ChannelPosts>> GetPosts(string channel, int offset, int limit)
         {
             if (string.IsNullOrWhiteSpace(Token))
-                return new APIResponse<List<Post>>() { Success = false, Error = "Not logged in" };
+                return new APIResponse<ChannelPosts>() { Success = false, Error = "Not logged in" };
 
             APIResponse<JObject> response = await MakeAPIRequest<JObject>(string.Format("channels/{0}/posts/{1}/{2}", channel, offset, limit));
 
             if (!response.Success)
-                return new APIResponse<List<Post>> { Success = false, Error = response.Error };
+                return new APIResponse<ChannelPosts> { Success = false, Error = response.Error };
 
-            List<Post> posts = new List<Post>();
-            Post newPost;
+            ChannelPosts posts = new ChannelPosts() { Order = response.Value["order"].ToObject<List<string>>(), Posts = new List<Post>() };
 
-            foreach (JToken post in response.Value["order"])
+            foreach (JProperty post in response.Value["posts"])
             {
-                newPost = response.Value["posts"][(string)post].ToObject<Post>();
+                Post newPost = post.Last.ToObject<Post>();
 
                 if (newPost.Type != PostType.Default)
                     newPost.User = User.System;
 
-                posts.Add(newPost);
+                posts.Posts.Add(newPost);
             }
 
-            posts.Reverse();
+            posts.Order.Reverse();
 
-            return new APIResponse<List<Post>>() { Success = true, Value = posts };
+            return new APIResponse<ChannelPosts>() { Success = true, Value = posts };
         }
 
         public static async Task<APIResponse<Bitmap>> GetAvatar(string userID)

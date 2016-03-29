@@ -52,44 +52,42 @@ namespace Mattermost.ViewModels.Models
             get { return GetValue<bool>(); }
             set { SetValue(value); }
         }
+        public int ReplyCount
+        {
+            get { return GetValue<int>(); }
+            set { SetValue(value); }
+        }
+        [NotifiesOn("IsMouseOver", "ReplyCount")]
+        public bool ShowReply
+        {
+            get { return ReplyCount > 0 || IsMouseOver; }
+        }
 
         Post post;
         DateTime date;
 
-        public PostViewModel(Post thisPost, Post lastPost, bool newDay, ChannelViewModel channel)
+        public PostViewModel(Post thisPost)
         {
             post = thisPost;
-
-            if (lastPost == null)
-                Type = PostDisplayType.MessageNameAndAvatar;
-            else
-                DetermineType(lastPost.User, lastPost.Created, newDay, channel);
+            Type = PostDisplayType.MessageNameAndAvatar;
         }
 
-        public PostViewModel(Post thisPost, PostViewModel lastPost, bool newDay, ChannelViewModel channel)
+        public PostViewModel (Post thisPost, User lastPostUser, DateTime lastPostTime, bool newDay)
         {
             post = thisPost;
 
-            if (lastPost == null)
+            if (User != lastPostUser || newDay)
                 Type = PostDisplayType.MessageNameAndAvatar;
+            else if ((Timestamp - lastPostTime).TotalHours > 1)
+                Type = PostDisplayType.MessageAndName;
             else
-                DetermineType(lastPost.User, lastPost.Timestamp, newDay, channel);
+                Type = PostDisplayType.MessageOnly;
         }
 
         public PostViewModel(DateTime date)
         {
             Type = PostDisplayType.Date;
             this.date = date;
-        }
-
-        void DetermineType(User otherUser, DateTime otherTime, bool newDay, ChannelViewModel channel)
-        {
-            if (User != otherUser || newDay)
-                Type = PostDisplayType.MessageNameAndAvatar;
-            else if ((Timestamp - otherTime).TotalHours > 1)
-                Type = PostDisplayType.MessageAndName;
-            else
-                Type = PostDisplayType.MessageOnly;
         }
 
         async void LoadAvatar()

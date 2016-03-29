@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Globalization;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Data;
 
@@ -60,6 +63,28 @@ namespace Mattermost.Utils
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             return ((DateTime)value).ToString("D");
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    class GreaterThanConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            Type valueType = value.GetType();
+            Type equalityComparer = typeof(Comparer<>).MakeGenericType(new Type[] { valueType });
+            PropertyInfo defaultProp = equalityComparer.GetProperty("Default");
+            IComparer comparer = (IComparer)defaultProp.GetValue(null, null);
+            bool greaterThan = comparer.Compare(value, parameter) > 0;
+
+            if (targetType.Name == "Visibility")
+                return greaterThan ? Visibility.Visible : Visibility.Collapsed;
+            else
+                return greaterThan;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
