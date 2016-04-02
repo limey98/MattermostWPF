@@ -30,6 +30,7 @@ namespace Mattermost
                 return User.GetUserByID(MyID);
             }
         }
+        public static Team Team { get; private set; }
 
         static HttpClient client = new HttpClient();
         static Dictionary<string, object> avatars = new Dictionary<string, object>();
@@ -270,6 +271,13 @@ namespace Mattermost
 
                 MyID = array["id"].ToString();
                 Token = response.Headers.GetValues("Token").First();
+
+                APIResponse<Team> teamObj = await MakeAPIRequest<Team>("teams/me");
+
+                if (!teamObj.Success)
+                    return new APIResponse() { Success = false, Error = teamObj.Error };
+
+                Team = teamObj.Value;
 
                 return new APIResponse() { Success = true };
             }

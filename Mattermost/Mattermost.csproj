@@ -96,6 +96,7 @@
     <Compile Include="Models\Channel.cs" />
     <Compile Include="Models\LocalConfig.cs" />
     <Compile Include="Models\Post.cs" />
+    <Compile Include="Models\Team.cs" />
     <Compile Include="Models\User.cs" />
     <Compile Include="Models\WebSocketMessage.cs" />
     <Compile Include="Preferences.cs" />

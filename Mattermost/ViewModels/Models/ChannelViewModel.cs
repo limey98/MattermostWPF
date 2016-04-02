@@ -1,7 +1,5 @@
-﻿using MaterialDesignThemes.Wpf;
-using Mattermost.Models;
+﻿using Mattermost.Models;
 using Mattermost.Utils;
-using Mattermost.Views.Dialogs;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -67,7 +65,7 @@ namespace Mattermost.ViewModels.Models
             get { return GetValue<double>(); }
             set {  SetValue(value); }
         }
-
+        
         public string Message
         {
             get { return GetValue<string>(); }
