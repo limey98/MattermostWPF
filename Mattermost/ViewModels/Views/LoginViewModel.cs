@@ -1,5 +1,7 @@
-﻿using Mattermost.Models;
+﻿using MaterialDesignThemes.Wpf;
+using Mattermost.Models;
 using Mattermost.Utils;
+using Mattermost.Views.Dialogs;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -10,21 +12,6 @@ namespace Mattermost.ViewModels.Views
 {
     class LoginViewModel : BaseViewModel
     {
-        public bool ShowMessage
-        {
-            get { return GetValue<bool>(); }
-            set { SetValue(value); }
-        }
-        public MessageType MessageType
-        {
-            get { return GetValue<MessageType>(); }
-            set { SetValue(value); }
-        }
-        public string ErrorMessage
-        {
-            get { return GetValue<string>(); }
-            set { SetValue(value); }
-        }
         public string Server
         {
             get { return GetValue<string>(); }
@@ -63,20 +50,17 @@ namespace Mattermost.ViewModels.Views
         {
             if (!Regex.IsMatch(Server, @"[(http(s)?):\/\/(www\.)?a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)"))
             {
-                MessageType = MessageType.ServerURLError;
-                ShowMessage = true;
+                await ShowMessageDialog("Server URL is invalid", false);
                 return;
             }
 
-            MessageType = MessageType.Progress;
-            ShowMessage = true;
+            DialogHost.Show(new ProgressDialog(), "RootDialog");
 
             APIResponse result = await MattermostAPI.Login(Server, Team, Username, password.SecurePassword);
 
             if (!result.Success)
             {
-                MessageType = MessageType.BoundTextError;
-                ErrorMessage = result.Error;
+                await ShowMessageDialog(result.Error);
                 return;
             }
 
@@ -93,8 +77,7 @@ namespace Mattermost.ViewModels.Views
 
             if (!users.Success)
             {
-                MessageType = MessageType.BoundTextError;
-                ErrorMessage = users.Error;
+                await ShowMessageDialog(users.Error);
                 return;
             }
 
@@ -103,23 +86,28 @@ namespace Mattermost.ViewModels.Views
 
             if (!channels.Success)
             {
-                MessageType = MessageType.BoundTextError;
-                ErrorMessage = channels.Error;
+                await ShowMessageDialog(channels.Error);
                 return;
             }
 
             await preferencesTask;
 
             mainVM.CurrentView = new MessageViewModel(mainVM, users.Value, channels.Value);
-            ShowMessage = false;
 
+            DialogHost.CloseDialogCommand.Execute(true, null);
         }
-    }
 
-    enum MessageType
-    {
-        Progress,
-        ServerURLError,
-        BoundTextError
+        async Task ShowMessageDialog(string message, bool closeFirst = true)
+        {
+            if (closeFirst)
+                DialogHost.CloseDialogCommand.Execute(true, null);
+
+            SimpleMessageDialog view = new SimpleMessageDialog()
+            {
+                DataContext = message
+            };
+
+            await DialogHost.Show(view, "RootDialog");
+        }
     }
 }

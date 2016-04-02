@@ -5,33 +5,6 @@ using System.Windows.Controls;
 
 namespace Mattermost.Utils
 {
-    class MessageTypeSelector : DataTemplateSelector
-    {
-        public DataTemplate Progress { get; set; }
-        public DataTemplate ServerURLError { get; set; }
-        public DataTemplate BoundTextError { get; set; }
-
-        public override DataTemplate SelectTemplate(object item, DependencyObject container)
-        {
-            if (item == null)
-                return null;
-
-            MessageType messageType = (MessageType)item;
-
-            switch (messageType)
-            {
-                case MessageType.Progress:
-                    return Progress;
-                case MessageType.ServerURLError:
-                    return ServerURLError;
-                case MessageType.BoundTextError:
-                    return BoundTextError;
-            }
-
-            return null;
-        }
-    }
-
     class PostTypeSelector : DataTemplateSelector
     {
         public DataTemplate Date { get; set; }

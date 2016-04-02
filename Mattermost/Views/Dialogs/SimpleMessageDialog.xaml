@@ -9,7 +9,7 @@
              mc:Ignorable="d" 
              d:DesignHeight="100" d:DesignWidth="100">
     <StackPanel Margin="16">
-        <TextBlock Text="{Binding}"/>
+        <TextBlock Text="{Binding}" Margin="0,0,0,16" MaxWidth="400" TextWrapping="Wrap"/>
         <Button IsDefault="True" Style="{DynamicResource MaterialDesignFlatButton}" Command="{x:Static wpf:DialogHost.CloseDialogCommand}" HorizontalAlignment="Center" Padding="8,2">
             <Button.CommandParameter>
                 <system:Boolean>True</system:Boolean>
