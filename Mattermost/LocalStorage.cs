@@ -34,6 +34,16 @@ namespace Mattermost
             return collection.FindOne(Query.All());
         }
 
+        public static T GetByID<T>(string collectionName, string id) where T : new()
+        {
+            if (!db.CollectionExists(collectionName))
+                return default(T);
+
+            LiteCollection<T> collection = db.GetCollection<T>(collectionName);
+
+            return collection.FindById(id);
+        }
+
         public static void Store<T>(string collectionName, T document) where T : new()
         {
             LiteCollection<T> collection = db.GetCollection<T>(collectionName);

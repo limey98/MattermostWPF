@@ -17,66 +17,81 @@
             <Setter Property="Cursor" Value="Hand"/>
         </Style>
     </UserControl.Resources>
-    <ScrollViewer VerticalScrollBarVisibility="Auto">
-        <StackPanel>
-            <DockPanel LastChildFill="False" Margin="0,20,0,5">
-                <TextBlock Margin="10,0" FontSize="15" VerticalAlignment="Center">CHANNEL</TextBlock>
-                <Button Style="{StaticResource MaterialDesignFloatingActionFlatVeryMiniButton}" DockPanel.Dock="Right" Margin="10,0" VerticalAlignment="Center" Padding="0">
-                    <material:PackIcon Kind="Plus"/>
-                </Button>
-            </DockPanel>
-            <ListBox ItemsSource="{Binding PublicChannels}" SelectedItem="{Binding SelectedPublicChannel}" ItemContainerStyle="{StaticResource SidebarListBoxItem}">
-                <ListBox.ItemTemplate>
-                    <DataTemplate>
-                        <DockPanel>
-                            <Border Background="{StaticResource SecondaryAccentBrush}" Visibility="{Binding IsSelected, Converter={StaticResource BoolToVisibilityHidden}}" Width="5" Height="25"/>
-                            <material:PackIcon Kind="Earth" VerticalAlignment="Center" Margin="20,0,5,0"/>
-                            <TextBlock Text="{Binding DisplayName}" VerticalAlignment="Center"/>
-                        </DockPanel>
-                    </DataTemplate>
-                </ListBox.ItemTemplate>
-            </ListBox>
-            <DockPanel Height="25">
-                <TextBlock Margin="45,0,0,0" VerticalAlignment="Center">
-                    <Hyperlink Foreground="{StaticResource PrimaryHueDarkForegroundBrush}">
-                        <TextBlock VerticalAlignment="Center">More...</TextBlock>
-                    </Hyperlink>
-                </TextBlock>
-            </DockPanel>
-            <DockPanel LastChildFill="False" Margin="0,20,0,5">
-                <TextBlock Margin="10,0" FontSize="15" VerticalAlignment="Center">PRIVATE GROUPS</TextBlock>
-                <Button Style="{StaticResource MaterialDesignFloatingActionFlatVeryMiniButton}" DockPanel.Dock="Right" Margin="10,0" VerticalAlignment="Center" Padding="0">
-                    <material:PackIcon Kind="Plus"/>
-                </Button>
-            </DockPanel>
-            <ListBox ItemsSource="{Binding PrivateGroups}" SelectedItem="{Binding SelectedPrivateGroup}" ItemContainerStyle="{StaticResource SidebarListBoxItem}">
-                <ListBox.ItemTemplate>
-                    <DataTemplate>
-                        <DockPanel>
-                            <Border Background="{StaticResource SecondaryAccentBrush}" Visibility="{Binding IsSelected, Converter={StaticResource BoolToVisibilityHidden}}" Width="5" Height="25"/>
-                            <material:PackIcon Kind="Lock" VerticalAlignment="Center" Margin="20,0,5,0"/>
-                            <TextBlock Text="{Binding DisplayName}" VerticalAlignment="Center"/>
-                        </DockPanel>
-                    </DataTemplate>
-                </ListBox.ItemTemplate>
-            </ListBox>
-            <DockPanel LastChildFill="False" Margin="0,20,0,5">
-                <TextBlock Margin="10,0" FontSize="15" VerticalAlignment="Center" Height="20">DIRECT MESSAGES</TextBlock>
-            </DockPanel>
-            <ListBox ItemsSource="{Binding DirectMessages}" SelectedItem="{Binding SelectedDirectMessage}" ItemContainerStyle="{StaticResource SidebarListBoxItem}">
-                <ListBox.ItemTemplate>
-                    <DataTemplate>
-                        <DockPanel LastChildFill="False">
-                            <Border Background="{StaticResource SecondaryAccentBrush}" Visibility="{Binding IsSelected, Converter={StaticResource BoolToVisibilityHidden}}" Width="5" Height="25"/>
-                            <material:PackIcon Kind="AccountRemove" VerticalAlignment="Center" Margin="20,0,5,0"/>
-                            <TextBlock Text="{Binding DisplayName}" VerticalAlignment="Center"/>
-                            <Button Style="{StaticResource MaterialDesignFloatingActionFlatVeryMiniButton}" DockPanel.Dock="Right" Margin="10,0" VerticalAlignment="Center" Padding="0">
-                                <material:PackIcon Kind="Close"/>
-                            </Button>
-                        </DockPanel>
-                    </DataTemplate>
-                </ListBox.ItemTemplate>
-            </ListBox>
-        </StackPanel>
-    </ScrollViewer>
+    <StackPanel>
+        <Grid Margin="8">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="18"/>
+                <RowDefinition Height="18"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="44"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Image Source="{Binding MyAvatar}" Grid.RowSpan="2" Width="36" Height="36" RenderOptions.BitmapScalingMode="HighQuality" HorizontalAlignment="Left"/>
+            <TextBlock Text="{Binding Username}" Grid.Column="1" FontSize="14" Foreground="{StaticResource PrimaryHueDarkForegroundBrush}"/>
+            <TextBlock Text="{Binding TeamName}" Grid.Column="1" Grid.Row="1" FontSize="14" FontWeight="Bold"/>
+        </Grid>
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <StackPanel>
+                <DockPanel LastChildFill="False" Margin="0,20,0,5">
+                    <TextBlock Margin="10,0" FontSize="15" VerticalAlignment="Center">CHANNEL</TextBlock>
+                    <Button Style="{StaticResource MaterialDesignFloatingActionFlatVeryMiniButton}" DockPanel.Dock="Right" Margin="10,0" VerticalAlignment="Center" Padding="0">
+                        <material:PackIcon Kind="Plus"/>
+                    </Button>
+                </DockPanel>
+                <ListBox ItemsSource="{Binding PublicChannels}" SelectedItem="{Binding SelectedPublicChannel}" ItemContainerStyle="{StaticResource SidebarListBoxItem}">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <DockPanel>
+                                <Border Background="{StaticResource SecondaryAccentBrush}" Visibility="{Binding IsSelected, Converter={StaticResource BoolToVisibilityHidden}}" Width="5" Height="25"/>
+                                <material:PackIcon Kind="Earth" VerticalAlignment="Center" Margin="20,0,5,0"/>
+                                <TextBlock Text="{Binding DisplayName}" VerticalAlignment="Center"/>
+                            </DockPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+                <DockPanel Height="25">
+                    <TextBlock Margin="45,0,0,0" VerticalAlignment="Center">
+                        <Hyperlink Foreground="{StaticResource PrimaryHueDarkForegroundBrush}">
+                            <TextBlock VerticalAlignment="Center">More...</TextBlock>
+                        </Hyperlink>
+                    </TextBlock>
+                </DockPanel>
+                <DockPanel LastChildFill="False" Margin="0,20,0,5">
+                    <TextBlock Margin="10,0" FontSize="15" VerticalAlignment="Center">PRIVATE GROUPS</TextBlock>
+                    <Button Style="{StaticResource MaterialDesignFloatingActionFlatVeryMiniButton}" DockPanel.Dock="Right" Margin="10,0" VerticalAlignment="Center" Padding="0">
+                        <material:PackIcon Kind="Plus"/>
+                    </Button>
+                </DockPanel>
+                <ListBox ItemsSource="{Binding PrivateGroups}" SelectedItem="{Binding SelectedPrivateGroup}" ItemContainerStyle="{StaticResource SidebarListBoxItem}">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <DockPanel>
+                                <Border Background="{StaticResource SecondaryAccentBrush}" Visibility="{Binding IsSelected, Converter={StaticResource BoolToVisibilityHidden}}" Width="5" Height="25"/>
+                                <material:PackIcon Kind="Lock" VerticalAlignment="Center" Margin="20,0,5,0"/>
+                                <TextBlock Text="{Binding DisplayName}" VerticalAlignment="Center"/>
+                            </DockPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+                <DockPanel LastChildFill="False" Margin="0,20,0,5">
+                    <TextBlock Margin="10,0" FontSize="15" VerticalAlignment="Center" Height="20">DIRECT MESSAGES</TextBlock>
+                </DockPanel>
+                <ListBox ItemsSource="{Binding DirectMessages}" SelectedItem="{Binding SelectedDirectMessage}" ItemContainerStyle="{StaticResource SidebarListBoxItem}">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <DockPanel LastChildFill="False">
+                                <Border Background="{StaticResource SecondaryAccentBrush}" Visibility="{Binding IsSelected, Converter={StaticResource BoolToVisibilityHidden}}" Width="5" Height="25"/>
+                                <material:PackIcon Kind="AccountRemove" VerticalAlignment="Center" Margin="20,0,5,0"/>
+                                <TextBlock Text="{Binding DisplayName}" VerticalAlignment="Center"/>
+                                <Button Style="{StaticResource MaterialDesignFloatingActionFlatVeryMiniButton}" DockPanel.Dock="Right" Margin="10,0" VerticalAlignment="Center" Padding="0">
+                                    <material:PackIcon Kind="Close"/>
+                                </Button>
+                            </DockPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </StackPanel>
+        </ScrollViewer>
+    </StackPanel>
 </UserControl>

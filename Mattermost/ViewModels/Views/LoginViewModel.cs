@@ -70,8 +70,11 @@ namespace Mattermost.ViewModels.Views
                 Team = Team,
                 Username = Username,
                 UserID = MattermostAPI.MyID,
-                Token = MattermostAPI.Token
+                Token = MattermostAPI.Token,
+                TeamID = MattermostAPI.Team.ID,
             });
+
+            LocalStorage.Store("teams", MattermostAPI.Team);
 
             APIResponse<List<User>> users = await MattermostAPI.GetUsers();
 

@@ -5,7 +5,11 @@ using SuperSocket.ClientEngine;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Drawing;
+using System.Drawing.Imaging;
+using System.IO;
 using System.Linq;
+using System.Windows.Media.Imaging;
 using WebSocket4Net;
 
 namespace Mattermost.ViewModels.Views
@@ -70,6 +74,25 @@ namespace Mattermost.ViewModels.Views
         {
             get { return GetValue<ChannelViewModel>(); }
             set { SetValue(value); }
+        }
+        public BitmapImage MyAvatar
+        {
+            get
+            {
+                if (GetValue<BitmapImage>() == null)
+                    LoadAvatar();
+
+                return GetValue<BitmapImage>();
+            }
+            set { SetValue(value); }
+        }
+        public string Username
+        {
+            get { return string.Format("@{0}", MattermostAPI.Me.Username); }
+        }
+        public string TeamName
+        {
+            get { return MattermostAPI.Team.DisplayName; }
         }
 
         WebSocket websocket;
@@ -152,6 +175,29 @@ namespace Mattermost.ViewModels.Views
             return DirectMessages.FirstOrDefault(c => c.ID == id);
         }
 
+        async void LoadAvatar()
+        {
+            MyAvatar = new BitmapImage(new Uri("pack://application:,,,/Resources/MattermostLogo.png"));
+            
+            APIResponse<Bitmap> response = await MattermostAPI.GetAvatar(MattermostAPI.Me.ID);
+
+            if (!response.Success)
+                Console.WriteLine(response.Error);
+
+            using (MemoryStream memory = new MemoryStream())
+            {
+                response.Value.Save(memory, ImageFormat.Png);
+                memory.Position = 0;
+                BitmapImage bitmapImage = new BitmapImage();
+                bitmapImage.BeginInit();
+                bitmapImage.StreamSource = memory;
+                bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
+                bitmapImage.EndInit();
+
+                MyAvatar = bitmapImage;
+            }
+        }
+
         #region WebSocket stuff
         void WebSocketMessage(object sender, MessageReceivedEventArgs e)
         {
@@ -175,7 +221,7 @@ namespace Mattermost.ViewModels.Views
             Console.WriteLine("WebSocket opened");
         }
 
-        void WebSocketError(object sender, ErrorEventArgs e)
+        void WebSocketError(object sender, SuperSocket.ClientEngine.ErrorEventArgs e)
         {
         }
 

@@ -232,6 +232,7 @@ namespace Mattermost
                 APIBaseURL = new Uri(config.Server + "/api/v1/");
                 Token = config.Token;
                 MyID = config.UserID;
+                Team = LocalStorage.GetByID<Team>("teams", config.TeamID);
 
                 return new APIResponse() { Success = true };
             }
