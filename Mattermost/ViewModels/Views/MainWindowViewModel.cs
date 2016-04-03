@@ -18,7 +18,7 @@ namespace Mattermost.ViewModels.Views
 
             LocalStorage.Initialise();
 
-            LocalConfig config = LocalStorage.GetConfig();
+            LocalConfig config = LocalStorage.GetFirst<LocalConfig>("configs");
 
             if (config == null)
             {

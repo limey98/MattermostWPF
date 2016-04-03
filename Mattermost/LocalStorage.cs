@@ -24,21 +24,21 @@ namespace Mattermost
             db.Dispose();
         }
 
-        public static LocalConfig GetConfig()
+        public static T GetFirst<T>(string collectionName) where T : new()
         {
-            if (!db.CollectionExists("configs"))
-                return null;
+            if (!db.CollectionExists(collectionName))
+                return default(T);
 
-            LiteCollection<LocalConfig> configs = db.GetCollection<LocalConfig>("configs");
+            LiteCollection<T> collection = db.GetCollection<T>(collectionName);
 
-            return configs.FindOne(Query.All());
+            return collection.FindOne(Query.All());
         }
 
-        public static void StoreConfig(LocalConfig config)
+        public static void Store<T>(string collectionName, T document) where T : new()
         {
-            LiteCollection<LocalConfig> configs = db.GetCollection<LocalConfig>("configs");
+            LiteCollection<T> collection = db.GetCollection<T>(collectionName);
 
-            configs.Insert(config);
+            collection.Insert(document);
         }
     }
 }

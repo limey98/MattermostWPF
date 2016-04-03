@@ -64,7 +64,7 @@ namespace Mattermost.ViewModels.Views
                 return;
             }
 
-            LocalStorage.StoreConfig(new LocalConfig
+            LocalStorage.Store("configs", new LocalConfig
             {
                 Server = Server,
                 Team = Team,
