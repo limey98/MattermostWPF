@@ -19,6 +19,11 @@ Current working on:
   * Server info (including token) to automatically log on
   * Caching posts, channels and users to give some basic offline functionality
   
+#Screenshots
+
+![UI Example - Login](https://cdn-standard.discourse.org/uploads/mattermost/original/1X/0ba48cb82242a43223fd1f58fccc05f6fb9b1475.png)
+![UI Example - Team Site](https://cdn-standard.discourse.org/uploads/mattermost/original/1X/d4d83fba89c76a3c11f3e6fd8ce9a926865b7e2c.png)
+
 #Notes
 This is being developed with Visual Studio 2015, however it should still work in older versions of VS (it's not building with C# 6.0).
 
