@@ -12,6 +12,11 @@ namespace Mattermost.ViewModels.Views
 {
     class LoginViewModel : BaseViewModel
     {
+        public string Error
+        {
+            get { return GetValue<string>(); }
+            set { SetValue(value); }
+        }
         public string Server
         {
             get { return GetValue<string>(); }
@@ -40,10 +45,22 @@ namespace Mattermost.ViewModels.Views
 
         RelayCommand<PasswordBox> login;
         MainWindowViewModel mainVM;
+        LocalConfig config;
 
         public LoginViewModel(MainWindowViewModel mainVM)
         {
             this.mainVM = mainVM;
+        }
+
+        public LoginViewModel(MainWindowViewModel mainVM, LocalConfig config, string message)
+            : this(mainVM)
+        {
+            Error = message;
+            Server = config.Server;
+            Team = config.Team;
+            Username = config.Username;
+
+            this.config = config;
         }
 
         async void Login(PasswordBox password)
@@ -64,17 +81,22 @@ namespace Mattermost.ViewModels.Views
                 return;
             }
 
-            LocalStorage.Store("configs", new LocalConfig
+            if (config == null)
             {
-                Server = Server,
-                Team = Team,
-                Username = Username,
-                UserID = MattermostAPI.MyID,
-                Token = MattermostAPI.Token,
-                TeamID = MattermostAPI.Team.ID,
-            });
+                config = new LocalConfig();
+            }
 
-            LocalStorage.Store("teams", MattermostAPI.Team);
+            config.Server = Server;
+            config.Team = Team;
+            config.Username = Username;
+            config.UserID = MattermostAPI.MyID;
+            config.Token = MattermostAPI.Token;
+            config.TeamID = MattermostAPI.Team.ID;
+
+            if (config == null)
+                LocalStorage.Store("configs", config);
+            else
+                LocalStorage.Update("configs", config);
 
             APIResponse<List<User>> users = await MattermostAPI.GetUsers();
 

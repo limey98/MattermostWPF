@@ -38,11 +38,18 @@ namespace Mattermost.ViewModels.Views
         {
             APIResponse response = await MattermostAPI.CheckSession(config);
             
+            if (!response.Success)
+            {
+                CurrentView = new LoginViewModel(this, config, response.Error);
+            }
+            else
+            {
             APIResponse<List<User>> users = await MattermostAPI.GetUsers();
             APIResponse<List<Channel>> channels = await MattermostAPI.GetChannels();
             APIResponse<Preferences> preferences = await MattermostAPI.GetPreferences();
 
             CurrentView = new MessageViewModel(this, users.Value, channels.Value);
+            }
         }
     }
 }

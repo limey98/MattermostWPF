@@ -16,7 +16,6 @@
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.TextBox.xaml" />
             </ResourceDictionary.MergedDictionaries>
             <win:GridLength x:Key="Spacing">10</win:GridLength>
-            <win:GridLength x:Key="BottomSpacing">20</win:GridLength>
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid>
@@ -36,7 +35,9 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="{StaticResource Spacing}"/>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="{StaticResource BottomSpacing}"/>
+            <RowDefinition Height="{StaticResource Spacing}"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="{StaticResource Spacing}"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
@@ -48,6 +49,7 @@
         <TextBox Text="{Binding Username}" Grid.Column="3" Grid.Row="5" materialDesign:TextFieldAssist.Hint="Username" Style="{StaticResource MaterialDesignFloatingHintTextBox}"/>
         <materialDesign:PackIcon Grid.Column="1" Grid.Row="7" Kind="KeyVariant" Width="32" Height="32" VerticalAlignment="Center"/>
         <PasswordBox x:Name="passwordBox" Grid.Column="3" Grid.Row="7" materialDesign:TextFieldAssist.Hint="Password" Style="{StaticResource MaterialDesignFloatingHintPasswordBox}"/>
-        <Button Command="{Binding LoginCommand}" CommandParameter="{Binding ElementName=passwordBox}" Grid.Column="1" Grid.ColumnSpan="3" Grid.Row="9" VerticalAlignment="Center" HorizontalAlignment="Center" Style="{StaticResource MaterialDesignRaisedAccentButton}">Login</Button>
+        <TextBlock Text="{Binding Error}" Grid.Column="1" Grid.ColumnSpan="3" Grid.Row="9" FontSize="12" Foreground="Red" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+        <Button Command="{Binding LoginCommand}" CommandParameter="{Binding ElementName=passwordBox}" Grid.Column="1" Grid.ColumnSpan="3" Grid.Row="11" VerticalAlignment="Center" HorizontalAlignment="Center" Style="{StaticResource MaterialDesignRaisedAccentButton}">Login</Button>
     </Grid>
 </UserControl>

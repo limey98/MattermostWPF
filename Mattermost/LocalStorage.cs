@@ -50,5 +50,12 @@ namespace Mattermost
 
             collection.Insert(document);
         }
+
+        public static bool Update<T>(string collectionName, T document) where T : new()
+        {
+            LiteCollection<T> collection = db.GetCollection<T>(collectionName);
+
+            return collection.Update(document);
+        }
     }
 }
