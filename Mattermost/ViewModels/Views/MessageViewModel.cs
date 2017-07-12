@@ -150,7 +150,7 @@ namespace Mattermost.ViewModels.Views
             if (activeChannel == "")
                 SelectedPublicChannel = PublicChannels.First(c => c.Name == "town-square");
 
-            websocket = new WebSocket(MattermostAPI.APIBaseURL.ToString().Replace("http", "ws") + "websocket", customHeaderItems: new List<KeyValuePair<string, string>>() { new KeyValuePair<string, string>("Authorization", "Bearer " + MattermostAPI.Token) });
+            websocket = new WebSocket(MattermostAPI.APIBaseURL.ToString().Replace("http","ws")+"users/"+ "websocket", customHeaderItems: new List<KeyValuePair<string, string>>() { new KeyValuePair<string, string>("Authorization", "Bearer " + MattermostAPI.Token) });
 
             websocket.Opened += WebSocketOpen;
             websocket.Error += WebSocketError;
