@@ -2,6 +2,7 @@
 using Mattermost.Models;
 using Mattermost.Utils;
 using Mattermost.Views.Dialogs;
+using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -65,7 +66,7 @@ namespace Mattermost.ViewModels.Views
 
         async void Login(PasswordBox password)
         {
-            if (!Regex.IsMatch(Server, @"[(http(s)?):\/\/(www\.)?a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)"))
+            if (!Regex.IsMatch(Server, @"[(http(s)?):\/\/(www\.)?a-zA-Z0-9@:%._\+~#=]{2,256}[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)"))
             {
                 await ShowMessageDialog("Server URL is invalid", false);
                 return;
@@ -93,12 +94,24 @@ namespace Mattermost.ViewModels.Views
             config.Token = MattermostAPI.Token;
             config.TeamID = MattermostAPI.Team.ID;
 
-            if (config == null)
-                LocalStorage.Store("configs", config);
-            else
-                LocalStorage.Update("configs", config);
 
-            APIResponse<List<User>> users = await MattermostAPI.GetUsers();
+            try
+            {
+                LocalStorage.Store("configs", config);
+            }
+            catch (Exception e)
+            {
+
+                LocalStorage.Update("configs", config);
+            }
+
+
+            //if (config == null)
+               
+            //else
+            //    LocalStorage.Update("configs", config);
+
+            APIResponse<List<User>> users = await MattermostAPI.GetUsers(MattermostAPI.Team.ID);
 
             if (!users.Success)
             {
@@ -107,7 +120,7 @@ namespace Mattermost.ViewModels.Views
             }
 
             Task<APIResponse<Preferences>> preferencesTask = MattermostAPI.GetPreferences();
-            APIResponse<List<Channel>> channels = await MattermostAPI.GetChannels();
+            APIResponse<List<Channel>> channels = await MattermostAPI.GetChannels(MattermostAPI.Team.ID);
 
             if (!channels.Success)
             {
