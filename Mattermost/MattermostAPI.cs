@@ -203,7 +203,7 @@ namespace Mattermost
         {
             try
             {
-                HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, new Uri(config.Server + "/api/v3/teams/"+config.TeamID +"/me"));
+                HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, new Uri(config.Server + "/api/v3/teams/" + config.TeamID + "/me"));
 
                 request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", config.Token);
 
@@ -273,22 +273,33 @@ namespace Mattermost
                 MyID = array["id"].ToString();
                 Token = response.Headers.GetValues("Token").First();
 
-                APIResponse<Team> teamObj = await MakeAPIRequest<Team>("teams/" + "ffeg8g9omfbizjp9urjdbc6x5a" + "/me");
+                //APIResponse<Team> teamObj = await MakeAPIRequest<Team>("teams/" + "ffeg8g9omfbizjp9urjdbc6x5a" + "/me");
+                APIResponse<JObject> teamObj = await MakeAPIRequest<JObject>("teams/all");
+                Team t=new Team();
+
+                foreach (KeyValuePair<string, JToken> h in teamObj.Value)
+                {
+                    t = JsonConvert.DeserializeObject<Team>(h.Value.ToString());
+                    if (t.DisplayName == team)
+                    {
+                        break;
+                    }
+                }
                 try
                 {
-                    LocalStorage.Store<Team>("teams", teamObj.Value);
+                    LocalStorage.Store<Team>("teams", t);
                 }
                 catch (Exception)
                 {
 
-                    LocalStorage.Update<Team>("teams", teamObj.Value);
+                    LocalStorage.Update<Team>("teams", t);
                 }
-              
 
-                if (!teamObj.Success)
+
+                if (String.IsNullOrEmpty(t.Name))
                     return new APIResponse() { Success = false, Error = teamObj.Error };
 
-                Team = teamObj.Value;
+                 Team = t;
 
                 return new APIResponse() { Success = true };
             }
@@ -472,7 +483,7 @@ namespace Mattermost
                 Message = message
             };
 
-            return await MakeAPIRequest(string.Format("teams/{1}/channels/{0}/posts/create", channel.ID,Team.ID), JsonConvert.SerializeObject(post));
+            return await MakeAPIRequest(string.Format("teams/{1}/channels/{0}/posts/create", channel.ID, Team.ID), JsonConvert.SerializeObject(post));
         }
 
         static string ConvertToString(SecureString secPassword)
