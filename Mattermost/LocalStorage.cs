@@ -11,7 +11,7 @@ namespace Mattermost
 
         public static void Initialise()
         {
-            string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Aeries", "Mattermost");
+            string path = Path.Combine(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location));
 
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);
@@ -54,7 +54,7 @@ namespace Mattermost
         public static bool Update<T>(string collectionName, T document) where T : new()
         {
             LiteCollection<T> collection = db.GetCollection<T>(collectionName);
-
+            
             return collection.Update(document);
         }
     }

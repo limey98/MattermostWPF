@@ -203,7 +203,7 @@ namespace Mattermost
         {
             try
             {
-                HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, new Uri(config.Server + "/api/v1/users/me"));
+                HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, new Uri(config.Server + "/api/v3/teams/"+config.TeamID +"/me"));
 
                 request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", config.Token);
 
@@ -229,7 +229,7 @@ namespace Mattermost
                     return new APIResponse() { Success = false, Error = error.Message };
                 }
 
-                APIBaseURL = new Uri(config.Server + "/api/v1/");
+                APIBaseURL = new Uri(config.Server + "/api/v3/");
                 Token = config.Token;
                 MyID = config.UserID;
                 Team = LocalStorage.GetByID<Team>("teams", config.TeamID);
@@ -244,7 +244,7 @@ namespace Mattermost
 
         public static async Task<APIResponse> Login(string server, string team, string username, SecureString password)
         {
-            APIBaseURL = new Uri(server + "/api/v1/");
+            APIBaseURL = new Uri(server + "/api/v3/");
 
             try
             {
@@ -254,7 +254,7 @@ namespace Mattermost
                 if (Regex.IsMatch(username, @"[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?"))
                     postData.Add("email", username);
                 else
-                    postData.Add("username", username);
+                    postData.Add("login_id", username);
 
                 request.Content = new StringContent(JsonConvert.SerializeObject(postData), Encoding.UTF8, "application/json");
 
@@ -273,7 +273,17 @@ namespace Mattermost
                 MyID = array["id"].ToString();
                 Token = response.Headers.GetValues("Token").First();
 
-                APIResponse<Team> teamObj = await MakeAPIRequest<Team>("teams/me");
+                APIResponse<Team> teamObj = await MakeAPIRequest<Team>("teams/" + "ffeg8g9omfbizjp9urjdbc6x5a" + "/me");
+                try
+                {
+                    LocalStorage.Store<Team>("teams", teamObj.Value);
+                }
+                catch (Exception)
+                {
+
+                    LocalStorage.Update<Team>("teams", teamObj.Value);
+                }
+              
 
                 if (!teamObj.Success)
                     return new APIResponse() { Success = false, Error = teamObj.Error };
@@ -288,12 +298,12 @@ namespace Mattermost
             }
         }
 
-        public static async Task<APIResponse<List<User>>> GetUsers()
+        public static async Task<APIResponse<List<User>>> GetUsers(string team_id)
         {
             if (string.IsNullOrWhiteSpace(Token))
                 return new APIResponse<List<User>>() { Success = false, Error = "Not logged in" };
 
-            APIResponse<JObject> response = await MakeAPIRequest<JObject>("users/profiles");
+            APIResponse<JObject> response = await MakeAPIRequest<JObject>("users/profiles/" + team_id);
 
             if (!response.Success)
                 return new APIResponse<List<User>>() { Success = false, Error = response.Error };
@@ -308,12 +318,12 @@ namespace Mattermost
             return new APIResponse<List<User>>() { Success = true, Value = users };
         }
 
-        public static async Task<APIResponse<List<Channel>>> GetChannels()
+        public static async Task<APIResponse<List<Channel>>> GetChannels(string team_id)
         {
             if (string.IsNullOrWhiteSpace(Token))
                 return new APIResponse<List<Channel>>() { Success = false, Error = "Not logged in" };
 
-            APIResponse<JObject> response = await MakeAPIRequest<JObject>("channels/");
+            APIResponse<JObject> response = await MakeAPIRequest<JObject>("teams/" + team_id + "/channels/");
 
             if (!response.Success)
                 return new APIResponse<List<Channel>>() { Success = false, Error = response.Error };
@@ -346,7 +356,7 @@ namespace Mattermost
             if (string.IsNullOrWhiteSpace(Token))
                 return new APIResponse<ChannelPosts>() { Success = false, Error = "Not logged in" };
 
-            APIResponse<JObject> response = await MakeAPIRequest<JObject>(string.Format("channels/{0}/posts/{1}/{2}", channel, offset, limit));
+            APIResponse<JObject> response = await MakeAPIRequest<JObject>(string.Format("teams/{3}/channels/{0}/posts/page/{1}/{2}", channel, offset, limit, Team.ID));
 
             if (!response.Success)
                 return new APIResponse<ChannelPosts> { Success = false, Error = response.Error };
@@ -462,7 +472,7 @@ namespace Mattermost
                 Message = message
             };
 
-            return await MakeAPIRequest(string.Format("channels/{0}/create", channel.ID), JsonConvert.SerializeObject(post));
+            return await MakeAPIRequest(string.Format("teams/{1}/channels/{0}/posts/create", channel.ID,Team.ID), JsonConvert.SerializeObject(post));
         }
 
         static string ConvertToString(SecureString secPassword)
